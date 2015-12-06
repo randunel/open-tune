@@ -19,5 +19,9 @@
   "license": "Apache-2.0",
   "dependencies": {
     "uuid": "~2.0.1"
+  },
+  "devDependencies": {
+    "should": "~7.1.1",
+    "mocha": "~2.3.4"
   }
 }
