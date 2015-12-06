@@ -16,5 +16,8 @@
     "tunnel"
   ],
   "author": "Mihai Ene",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "uuid": "~2.0.1"
+  }
 }
