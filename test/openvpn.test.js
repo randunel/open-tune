@@ -6,9 +6,10 @@ var openvpn = require('../').openvpn;
 
 describe('openvpn', function() {
     it('should work', () => {
-        return openvpn.create({
-            config: '/Users/anatoliy/Downloads/client-anatoliy.ovpn'
-        });
+        return openvpn({
+            workingDirectory: '/tmp',
+            config: __dirname + '/../work/client-anatoliy.ovpn'
+        }).create();
     });
 });
 
