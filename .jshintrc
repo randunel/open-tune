@@ -39,6 +39,7 @@
     "strict": true,
     "latedef": false,
     "trailing": true,
-    "smarttabs": true
+    "smarttabs": true,
+    "bitwise": false
 }
 
