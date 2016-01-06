@@ -9,10 +9,10 @@ describe('fifo', function() {
     it('should work', function() {
         let fifo = createFifo({
             dir: '/tmp',
-            id: 'test-fifo'
+            name: 'test-fifo'
         });
         let opts = {env: {hello: 'world'}};
-        fifo.init().then(() => util.run(fifo.getCallerPath(), [], opts));
+        fifo.init().then(() => util.exec(fifo.getCallerPath(), opts));
         return fifo.wait()
             .then(data => {
                 should.exist(data);
