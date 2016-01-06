@@ -1,14 +1,14 @@
 'use strict';
 
 var should = require('should');
-var makeFifo = require('../lib/fifo.js');
+var createFifo = require('../lib/fifo.js');
 var util = require('../lib/util.js');
 
 describe('fifo', function() {
 
     it('should work', function() {
-        let fifo = makeFifo({
-            dir: __dirname + '/../work/',
+        let fifo = createFifo({
+            dir: '/tmp',
             id: 'test-fifo'
         });
         let opts = {env: {hello: 'world'}};

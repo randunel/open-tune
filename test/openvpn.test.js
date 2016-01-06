@@ -4,11 +4,11 @@
 // var should = require('should');
 var openvpn = require('../').openvpn;
 
-describe('openvpn', function() {
+describe.skip('openvpn', function() {
     it('should work', () => {
         return openvpn({
             workingDirectory: '/tmp',
-            config: __dirname + '/../work/client-anatoliy.ovpn'
+            config: '/home/mihai/.openvpn/lenovo.ovpn'
         }).create();
     });
 });
