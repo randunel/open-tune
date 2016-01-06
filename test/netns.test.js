@@ -6,6 +6,7 @@ let util = require('../lib/util');
 describe('getUnusedNNS', () => {
     describe('in clean state', () => {
         before(() => util.exec('node dev/cleanup.js'));
+
         it('should start counter with 0', () => netns.getUnusedNNS().then(
             nns => {
                 nns.name.should.equal('ot0');
@@ -41,7 +42,7 @@ describe('getUnusedNNS', () => {
             .then(netns.setupNNS)
             .then(netns.getUnusedNNS)
             .then(netns.setupNNS));
-        //after(() => util.exec('node dev/cleanup.js'));
+        after(() => util.exec('node dev/cleanup.js'));
 
         it('should continue counter with 2', () => netns.getUnusedNNS().then(
             nns => {
