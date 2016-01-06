@@ -10,7 +10,7 @@ describe('fifo', () => {
             dir: '/tmp',
             name: 'test-fifo'
         });
-        fifo.init().then(() => util.exec(fifo.getCallerPath()));
+        fifo.init().then(res => util.exec(res.caller));
         return fifo.wait()
         .then(() => util.exec('ls /tmp'))
         .then(list => list.should.not.containEql('test-fifo.sh'));
@@ -22,7 +22,7 @@ describe('fifo', () => {
             name: 'test-fifo'
         });
         let opts = {env: {hello: 'world'}};
-        fifo.init().then(() => util.exec(fifo.getCallerPath(), opts));
+        fifo.init().then(res => util.exec(res.caller, opts));
         return fifo.wait().then(
             data => should.exist(data.hello) && data.hello.should.equal('world')
         );
