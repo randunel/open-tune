@@ -12,7 +12,7 @@ describe('openvpn client', function() {
 
         it('should set up a working connection', () => {
             return client(getIntegrationTestConfig()).create().then(
-                nns => util.exec(`ip netns exec ${nns.name} ping -c 1 8.8.8.8`)
+                data => util.exec(`ip netns exec ${data.nns.name} ping -c 1 8.8.8.8`)
             ).then(
                 res => res.should.containEql('1 packet')
             );
@@ -25,10 +25,10 @@ describe('openvpn client', function() {
         it('should destroy the netns', () => {
             let openvpn = client(getIntegrationTestConfig());
             return openvpn.create().then(
-                nns => openvpn.destroy().then(
+                data => openvpn.destroy().then(
                     () => util.exec(`ip netns list`)
                 ).then(
-                    list => list.should.not.containEql(nns.name)
+                    list => list.should.not.containEql(data.nns.name)
                 )
             );
         });
