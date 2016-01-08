@@ -58,6 +58,34 @@ describe('getUnusedNNS', () => {
     });
 });
 
+describe('destroy', () => {
+    afterEach(() => util.exec('node dev/cleanup.js'));
+
+    it('should delete a network namespace', () => netns.setupNNS(getNNSParams()).then(
+        () => netns.destroy(getNNSParams())
+    ).then(
+        () => util.exec(`ip netns list`)
+    ).then(
+        list => list.should.not.containEql('ot99')
+    ));
+
+    it('should delete netns rules in default ns', () => netns.setupNNS(getNNSParams()).then(
+        () => netns.destroy(getNNSParams())
+    ).then(
+        () => util.exec(`ip route show`)
+    ).then(
+        list => list.should.not.containEql('169.254')
+    ));
+
+    it('should delete netns iptables in default ns', () => netns.setupNNS(getNNSParams()).then(
+        () => netns.destroy(getNNSParams())
+    ).then(
+        () => util.exec(`iptables -t nat -vnL`)
+    ).then(
+        list => list.should.not.containEql('169.254')
+    ));
+});
+
 describe('setupNNS', () => {
     before(() => util.exec('node dev/cleanup.js'));
     afterEach(() => util.exec('node dev/cleanup.js'));
@@ -77,19 +105,19 @@ describe('setupNNS', () => {
             output => output.should.containEql('1 received')
         ));
     });
-
-    function getNNSParams() {
-        let n = 99;
-        return {
-            name: `ot${n}`,
-            vethDefault: `veth_ot${n}`,
-            vethNNS: 'veth0',
-            netmask: 30,
-            network: '169.254.1.252',
-            ipDefault: '169.254.1.253',
-            ipNNS: '169.254.1.254',
-            broadcast: '169.254.1.255'
-        };
-    }
 });
+
+function getNNSParams() {
+    let n = 99;
+    return {
+        name: `ot${n}`,
+        vethDefault: `veth_ot${n}`,
+        vethNNS: 'veth0',
+        netmask: 30,
+        network: '169.254.1.252',
+        ipDefault: '169.254.1.253',
+        ipNNS: '169.254.1.254',
+        broadcast: '169.254.1.255'
+    };
+}
 

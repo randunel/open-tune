@@ -31,5 +31,19 @@ util.exec('killall openvpn').catch(() => {}).then(
         .filter(line => /169\./.test(line))
         .map(line => util.exec(`ip route delete ${line}`))
     )
+).then(
+    () => util.exec('iptables -t nat -vnL --line-numbers')
+).then(
+    list => {
+        let promise = Promise.resolve();
+        list
+        .split('\n')
+        .filter(line => /\s+169\./.test(line))
+        .reverse()
+        .forEach(line => {
+            promise = promise.then(() => util.exec(`iptables -t nat -D POSTROUTING ${line.split(' ')[0]}`));
+        });
+        return promise;
+    }
 );
 

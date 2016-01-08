@@ -1,5 +1,6 @@
 
 'use strict';
 
-exports.openvpn = require('./lib/openvpn.js');
+exports.client = require('./lib/openvpn-client.js');
+exports.server = require('./lib/openvpn-server.js');
 
