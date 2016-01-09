@@ -17,6 +17,14 @@ describe('openvpn client', function() {
                 res => res.should.containEql('1 packet')
             );
         });
+
+        it('should allow default nns to use new connection', () => {
+            return client(getIntegrationTestConfig()).create().then(
+                data => util.exec(`ping -I ${data.nns.vethDefault} -c 1 8.8.8.8`)
+            ).then(
+                res => res.should.containEql('1 packet')
+            );
+        });
     });
 
     describe('destroy', () => {
