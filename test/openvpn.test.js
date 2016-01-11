@@ -18,11 +18,27 @@ describe('openvpn client', function() {
             );
         });
 
-        it('should allow default nns to use new connection', () => {
+        it('should allow default nns to use new connection ICMP', () => {
             return client(getIntegrationTestConfig()).create().then(
                 data => util.exec(`ping -I ${data.nns.vethDefault} -c 1 8.8.8.8`)
             ).then(
                 res => res.should.containEql('1 packet')
+            );
+        });
+
+        it('should allow default nns to use new connection UDP', () => {
+            return client(getIntegrationTestConfig()).create().then(
+                data => util.exec(`traceroute -i ${data.nns.vethDefault} -n -w 1 -U 8.8.8.8`)
+            ).then(
+                res => res.should.containEql(' ms')
+            );
+        });
+
+        it('should allow default nns to use new connection TCP', () => {
+            return client(getIntegrationTestConfig()).create().then(
+                data => util.exec(`traceroute -i ${data.nns.vethDefault} -n -w 1 -T 8.8.8.8`)
+            ).then(
+                res => res.should.containEql(' ms')
             );
         });
     });
