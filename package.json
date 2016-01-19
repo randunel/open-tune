@@ -22,6 +22,8 @@
   },
   "devDependencies": {
     "should": "~7.1.1",
-    "mocha": "~2.3.4"
+    "mocha": "~2.3.4",
+    "2cca": "git+ssh://github.com/randunel/2cca.git"
   }
 }
+
