@@ -102,7 +102,7 @@ describe('setupNNS', () => {
         ).then(
             output => util.exec(`ip netns exec ot99 ping -c 1 ${output.split('via ')[1].split(' ')[0]}`)
         ).then(
-            output => output.should.containEql('1 received')
+            output => output.should.match(/1\s(packets |)received/)
         ));
     });
 });
