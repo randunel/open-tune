@@ -74,7 +74,15 @@ function getIntegrationTestConfig() {
     // TODO(me): grab params env
     return {
         workingDirectory: '/tmp',
-        config: '/home/mihai/.openvpn/lenovo.ovpn'
+        config: getConfigPath()
     };
+}
+
+function getConfigPath() {
+    let configPath = process.env.OPENVPN_CONFIG_PATH;
+    if (!configPath) {
+        throw new Error('Specify OPENVPN_CONFIG_PATH env variable to run tests');
+    }
+    return configPath;
 }
 
