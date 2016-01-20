@@ -11,10 +11,9 @@ vpn.create().then(
 );
 
 function getIntegrationTestConfig() {
-    // TODO(me): grab params env
     return {
         workingDirectory: '/tmp',
-        config: './client-anatoliy.ovpn'
+        config: './openvpn-config.ovpn'
     };
 }
 
@@ -23,14 +22,15 @@ var signals = {
     'SIGTERM': 15
 };
 
+Object.keys(signals).forEach(signal =>
+    process.on(signal, () =>
+        shutdown(signal, signals[signal])
+    )
+);
+
 function shutdown(signal, value) {
     vpn.destroy().then(() => {
         process.exit(value);
     });
 }
 
-Object.keys(signals).forEach(function (signal) {
-    process.on(signal, function () {
-        shutdown(signal, signals[signal]);
-    });
-});

@@ -1,5 +1,6 @@
 # TESTS
 
+CONFIG = ./openvpn-config.ovpn
 TESTER = ./node_modules/.bin/mocha
 OPTS = --growl --ignore-leaks --timeout 30000
 TESTS = test/*.test.js
@@ -19,11 +20,17 @@ JS_FILES = $(shell find . -type f -name "*.js" \
 					 -not -path "./newrelic.js" -and \
 					 -not -path "./db/schema.js")
 
+ifdef OPENVPN_CONFIG_PATH
+	CONFIG = $(OPENVPN_CONFIG_PATH)
+else ifeq ($(shell sh -c 'uname -n 2>/dev/null || echo not'),18.mene.ro)
+	CONFIG = /home/randunel/.openvpn/18.ovpn
+endif
+
 check:
 	@$(JSHINT) $(JS_FILES) && echo 'Those who know do not speak. Those who speak do not know.'
 
 test:
-	$(TESTER) $(OPTS) $(TESTS)
+	OPENVPN_CONFIG_PATH=$(CONFIG) $(TESTER) $(OPTS) $(TESTS)
 test-verbose:
 	$(TESTER) $(OPTS) --reporter spec $(TESTS)
 test-integration:
