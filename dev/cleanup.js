@@ -20,7 +20,7 @@ util.exec('killall openvpn').catch(() => {}).then(
         .filter(line => /\d+:\s/.test(line))
         .map(line => line.split(':')[1].trim())
         .filter(device => /veth_ot/.test(device))
-        .map(device => util.exec(`ip link delete ${device}`))
+        .map(device => util.exec(`ip link delete ${device.split('@')[0]}`))
     )
 ).then(
     () => util.exec('ip route show')

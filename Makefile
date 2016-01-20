@@ -35,5 +35,11 @@ testing:
 features:
 	NODE_ENV=test node_modules/.bin/cucumber.js
 
+docker-build:
+	docker build -t openvpn .
+
+docker-test:
+	docker run --privileged --net=host --rm -it openvpn
+
 .PHONY: test doc docs features
 
