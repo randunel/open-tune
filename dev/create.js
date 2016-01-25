@@ -2,35 +2,26 @@
 
 let client = require('../').client;
 
-let vpn = client(getIntegrationTestConfig());
+client('./openvpn-config.ovpn')
+    .then(ot => {
+        console.log('Should be connected', ot);
 
-vpn.create().then(
-    data => {
-        console.log(data);
-    }
-);
+        var signals = {
+            'SIGINT': 2,
+            'SIGTERM': 15
+        };
 
-function getIntegrationTestConfig() {
-    return {
-        workingDirectory: '/tmp',
-        config: './openvpn-config.ovpn'
-    };
-}
+        Object.keys(signals).forEach(signal =>
+            process.on(signal, () => shutdown(signal, signals[signal]))
+        );
 
-var signals = {
-    'SIGINT': 2,
-    'SIGTERM': 15
-};
-
-Object.keys(signals).forEach(signal =>
-    process.on(signal, () =>
-        shutdown(signal, signals[signal])
-    )
-);
-
-function shutdown(signal, value) {
-    vpn.destroy().then(() => {
-        process.exit(value);
+        function shutdown(signal, value) {
+            ot.destroy().then(() => {
+                process.exit(value);
+            });
+        }
+    })
+    .catch(err => {
+        console.error(err);
     });
-}
 
