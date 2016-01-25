@@ -18,7 +18,7 @@
     "author": "Mihai Ene",
     "license": "Apache-2.0",
     "dependencies": {
-        "nns": "randunel/node-nns"
+        "nns": "1.0.x"
     },
     "devDependencies": {
         "should": "~7.1.1",
