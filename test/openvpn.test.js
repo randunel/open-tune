@@ -10,73 +10,45 @@ describe('openvpn client', function() {
         before(() => util.exec('node dev/cleanup.js'));
         afterEach(() => util.exec('node dev/cleanup.js'));
 
-        it('should set up a working connection', () => {
-            return client(getIntegrationTestConfig()).create().then(
-                data => util.exec(`ip netns exec ${data.nns.name} ping -c 1 8.8.8.8`)
-            ).then(
-                res => res.should.containEql('1 packet')
-            );
-        });
+        it('should set up a working connection', () => client(getConfigPath())
+            .then(ot => util.exec(`ip netns exec ${ot.nns.config.name} ping -c 1 8.8.8.8`))
+            .then(res => res.should.containEql('1 packet'))
+        );
 
-        it('should allow default nns to use new connection ICMP', () => {
-            return client(getIntegrationTestConfig()).create().then(
-                data => util.exec(`traceroute -i ${data.nns.vethDefault} -n -w 1 -I 8.8.8.8`)
-            ).then(
-                res => res.should.containEql(' ms')
-            );
-        });
+        it('should allow default nns to use new connection ICMP', () => client(getConfigPath())
+            .then(ot => util.exec(`traceroute -i ${ot.nns.config.vethDefault} -n -w 1 -I 8.8.8.8`))
+            .then(res => res.should.containEql(' ms'))
+        );
 
-        it('should allow default nns to use new connection UDP', () => {
-            return client(getIntegrationTestConfig()).create().then(
-                data => util.exec(`traceroute -i ${data.nns.vethDefault} -n -w 1 -U 8.8.8.8`)
-            ).then(
-                res => res.should.containEql(' ms')
-            );
-        });
+        it('should allow default nns to use new connection UDP', () => client(getConfigPath())
+            .then(ot => util.exec(`traceroute -i ${ot.nns.config.vethDefault} -n -w 1 -U 8.8.8.8`))
+            .then(res => res.should.containEql(' ms'))
+        );
 
-        it('should allow default nns to use new connection TCP', () => {
-            return client(getIntegrationTestConfig()).create().then(
-                data => util.exec(`traceroute -i ${data.nns.vethDefault} -n -w 1 -T 8.8.8.8`)
-            ).then(
-                res => res.should.containEql(' ms')
-            );
-        });
+        it('should allow default nns to use new connection TCP', () => client(getConfigPath())
+            .then(ot => util.exec(`traceroute -i ${ot.nns.config.vethDefault} -n -w 1 -T 8.8.8.8`))
+            .then(res => res.should.containEql(' ms'))
+        );
     });
 
     describe('destroy', () => {
         afterEach(() => util.exec('node dev/cleanup.js'));
 
-        it('should destroy the netns', () => {
-            let openvpn = client(getIntegrationTestConfig());
-            return openvpn.create().then(
-                data => openvpn.destroy().then(
-                    () => util.exec(`ip netns list`)
-                ).then(
-                    list => list.should.not.containEql(data.nns.name)
-                )
-            );
-        });
+        it('should destroy the netns', () => client(getConfigPath())
+            .then(ot => ot.destroy()
+                .then(() => util.exec(`ip netns list`))
+                .then(list => list.should.not.containEql(ot.nns.name))
+            )
+        );
 
-        it('should kill the openvpn process', () => {
-            let openvpn = client(getIntegrationTestConfig());
-            return openvpn.create().then(
-                () => openvpn.destroy().then(
-                    () => util.exec(`ps aux`)
-                ).then(
-                    list => list.should.not.containEql(openvpn.id)
-                )
-            );
-        });
+        it('should kill the openvpn process', () => client(getConfigPath())
+            .then(ot => ot.destroy()
+            .then(() => util.exec(`ps aux`))
+            .then(list => list.should.not.containEql(ot.id))
+            )
+        );
     });
 });
-
-function getIntegrationTestConfig() {
-    // TODO(me): grab params env
-    return {
-        workingDirectory: '/tmp',
-        config: getConfigPath()
-    };
-}
 
 function getConfigPath() {
     let configPath = process.env.OPENVPN_CONFIG_PATH;
