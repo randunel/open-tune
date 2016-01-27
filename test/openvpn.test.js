@@ -1,7 +1,7 @@
 
 'use strict';
 
-// var should = require('should');
+var should = require('should'); // jshint ignore: line
 let client = require('../').client;
 let util = require('../lib/util');
 
@@ -12,7 +12,7 @@ describe('openvpn client', function() {
 
         it('should set up a working connection', () => client(getConfigPath())
             .then(ot => util.exec(`ip netns exec ${ot.nns.config.name} ping -c 1 8.8.8.8`))
-            .then(res => res.should.containEql('1 packet')));
+            .then(res => res.should.containEql('1 received')));
 
         it('should allow default nns to use new connection ICMP', () => client(getConfigPath())
             .then(ot => util.exec(`traceroute -i ${ot.nns.config.vethDefault} -n -w 1 -I 8.8.8.8`))
