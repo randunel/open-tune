@@ -22,6 +22,6 @@ client('./openvpn-config.ovpn')
         }
     })
     .catch(err => {
-        console.error(err);
+        console.error(err && err.stack || err);
     });
 
