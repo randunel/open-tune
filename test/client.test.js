@@ -43,10 +43,10 @@ describe('openvpn client', function() {
 });
 
 function getConfigPath() {
-    let configPath = process.env.OPENVPN_CONFIG_PATH;
-    if (!configPath) {
+    let config = process.env.OPENVPN_CONFIG_PATH;
+    if (!config) {
         throw new Error('Specify OPENVPN_CONFIG_PATH env variable to run tests');
     }
-    return configPath;
+    return {config};
 }
 
