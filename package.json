@@ -18,10 +18,11 @@
     "author": "Mihai Ene",
     "license": "Apache-2.0",
     "dependencies": {
-        "nns": "1.0.x"
+        "nns": "1.0.1"
     },
     "devDependencies": {
         "should": "~7.1.1",
-        "mocha": "~2.3.4"
+        "mocha": "~2.3.4",
+        "2cca": "1.x"
     }
 }
