@@ -10,10 +10,12 @@ const pathCA = 'test-assets/root.crt';
 const pathCERT = 'test-assets/server.crt';
 const pathKEY = 'test-assets/server.key';
 const pathDH = 'test-assets/dh1024.pem';
-const pathClientCERT = 'test-assets/client.crt';
-const pathClientKEY = 'test-assets/client.key';
+const pathClient1CERT = 'test-assets/client1.crt';
+const pathClient1KEY = 'test-assets/client1.key';
+const pathClient2CERT = 'test-assets/client2.crt';
+const pathClient2KEY = 'test-assets/client2.key';
 
-describe('openvpn server', function() {
+describe.only('openvpn server', function() {
     // this.timeout(1000000);
     before(() => createServerCerts().then(createClientCerts));
     after(() => removeCerts());
@@ -32,8 +34,8 @@ describe('openvpn server', function() {
             proto: 'udp',
             dev: 'tun',
             ca: pathCA,
-            cert: pathClientCERT,
-            key: pathClientKEY
+            cert: pathClient1CERT,
+            key: pathClient1KEY
         })));
 
     it('should route clients', () => {
@@ -52,8 +54,8 @@ describe('openvpn server', function() {
                     proto: 'udp',
                     dev: 'tun',
                     ca: pathCA,
-                    cert: pathClientCERT,
-                    key: pathClientKEY,
+                    cert: pathClient1CERT,
+                    key: pathClient1KEY,
                     nns: {
                         noImmediateRouting: true
                     }
@@ -68,18 +70,61 @@ describe('openvpn server', function() {
             .then(() => listen.getPacketSource)
             .then(source => source.should.equal(sv.nns.config.ipNNS));
     });
+
+    it('should let clients see each other', () => server({
+        pathCA,
+        pathCERT,
+        pathKEY,
+        pathDH,
+        network: '10.11.12.0 255.255.255.0',
+        port: 1194
+    })
+        .then(sv => {
+            let cl1, cl2;
+            return client({
+                remote: `${sv.nns.config.ipNNS} 1194`,
+                proto: 'udp',
+                dev: 'tun',
+                ca: pathCA,
+                cert: pathClient1CERT,
+                key: pathClient1KEY,
+                nns: {
+                    noImmediateRouting: true
+                }
+            })
+                .then(_cl => (cl1 = _cl))
+                .then(() => client({
+                    remote: `${sv.nns.config.ipNNS} 1194`,
+                    proto: 'udp',
+                    dev: 'tun',
+                    ca: pathCA,
+                    cert: pathClient2CERT,
+                    key: pathClient2KEY,
+                    nns: {
+                        noImmediateRouting: true
+                    }
+                }))
+                .then(_cl => (cl2 = _cl))
+                .then(() => cl1.nns.exec(`ping -c 1 ${cl2.config.ip}`))
+                .then(output => output.should.match(/1\s(packets |)received/))
+                .then(() => cl2.nns.exec(`ping -c 1 ${cl1.config.ip}`))
+                .then(output => output.should.match(/1\s(packets |)received/));
+        }));
 });
 
 function createServerCerts() {
     return util.exec('mkdir ./test-assets')
-        .catch(() => {})
+        .then(() => util.exec('../node_modules/.bin/2cca dh 1024', {cwd: './test-assets'}))
         .then(() => util.exec('../node_modules/.bin/2cca root', {cwd: './test-assets'}))
         .then(() => util.exec('../node_modules/.bin/2cca server', {cwd: './test-assets'}))
-        .then(() => util.exec('../node_modules/.bin/2cca dh 1024', {cwd: './test-assets'}));
+        .catch(() => {});
 }
 
 function createClientCerts() {
-    return util.exec('../node_modules/.bin/2cca client', {cwd: './test-assets'});
+    return Promise.all([
+        util.exec('../node_modules/.bin/2cca client CN=client1', {cwd: './test-assets'}),
+        util.exec('../node_modules/.bin/2cca client CN=client2', {cwd: './test-assets'}),
+    ]);
 }
 
 function removeCerts() {
