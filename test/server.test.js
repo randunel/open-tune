@@ -110,6 +110,34 @@ describe.only('openvpn server', function() {
                 .then(() => cl2.nns.exec(`ping -c 1 ${cl1.config.ip}`))
                 .then(output => output.should.match(/1\s(packets |)received/));
         }));
+
+    it('should route its namespace to clients', () => {
+        let sv, cl;
+        return Promise.all([
+            server({
+                pathCA,
+                pathCERT,
+                pathKEY,
+                pathDH,
+                network: '10.11.12.0 255.255.255.0',
+                port: 1194
+            })
+                .then(_sv => (sv = _sv) && client({
+                    remote: `${_sv.nns.config.ipNNS} 1194`,
+                    proto: 'udp',
+                    dev: 'tun',
+                    ca: pathCA,
+                    cert: pathClient1CERT,
+                    key: pathClient1KEY,
+                    nns: {
+                        noImmediateRouting: true
+                    }
+                }))
+                .then(_cl => (cl = _cl)),
+        ])
+            .then(() => sv.nns.exec(`ping -c 1 ${cl.config.ip}`))
+            .then(output => output.should.match(/1\s(packets |)received/));
+    });
 });
 
 function createServerCerts() {
