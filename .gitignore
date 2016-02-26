@@ -2,3 +2,5 @@ node_modules
 work
 dev/pki
 openvpn-config.ovpn
+test/openvpn-cfg.js
+

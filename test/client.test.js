@@ -1,4 +1,3 @@
-
 'use strict';
 
 var should = require('should'); // jshint ignore: line
@@ -25,6 +24,10 @@ describe('openvpn client', function() {
         it('should allow default nns to use new connection TCP', () => client(getConfigPath())
             .then(ot => util.exec(`traceroute -i ${ot.nns.config.vethDefault} -n -w 1 -T 8.8.8.8`))
             .then(res => res.should.containEql(' ms')));
+
+        it('should allow creation with certificates as params', () => client(require('./openvpn-cfg.js'))
+            .then(ot => util.exec(`ip netns exec ${ot.nns.config.name} ping -c 1 8.8.8.8`))
+            .then(res => res.should.containEql('1 received')));
     });
 
     describe('destroy', () => {

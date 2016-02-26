@@ -15,7 +15,7 @@ const pathClient1KEY = 'test-assets/client1.key';
 const pathClient2CERT = 'test-assets/client2.crt';
 const pathClient2KEY = 'test-assets/client2.key';
 
-describe.only('openvpn server', function() {
+describe('openvpn server', function() {
     // this.timeout(1000000);
     before(() => createServerCerts().then(createClientCerts));
     after(() => removeCerts());
@@ -164,7 +164,7 @@ function startListening() {
         let _resolve = Promise.reject(new Error('No packets received'));
         const listen = {
             port: 44044,
-            address: '192.168.1.12',
+            address: '192.168.0.120',
             getPacketSource: new Promise(resolve => _resolve = resolve)
         };
         const server = dgram.createSocket('udp4', resolve(listen));
