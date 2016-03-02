@@ -25,7 +25,11 @@ describe('openvpn client', function() {
             .then(ot => util.exec(`traceroute -i ${ot.nns.config.vethDefault} -n -w 1 -T 8.8.8.8`))
             .then(res => res.should.containEql(' ms')));
 
-        it('should allow creation with certificates as params', () => client(require('./openvpn-cfg.js'))
+        it('should allow creation with certificates as params', () => client(require('./openvpn-cfg.js').pki)
+            .then(ot => util.exec(`ip netns exec ${ot.nns.config.name} ping -c 1 8.8.8.8`))
+            .then(res => res.should.containEql('1 received')));
+
+        it('should allow login with userpass', () => client(require('./openvpn-cfg.js').userpass)
             .then(ot => util.exec(`ip netns exec ${ot.nns.config.name} ping -c 1 8.8.8.8`))
             .then(res => res.should.containEql('1 received')));
     });
