@@ -1,6 +1,6 @@
 {
     "name": "open-tune",
-    "version": "0.7.0",
+    "version": "1.0.0",
     "description": "Manages openvpn tunnels",
     "main": "index.js",
     "scripts": {
