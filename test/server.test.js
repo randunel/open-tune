@@ -164,7 +164,7 @@ function startListening() {
         let _resolve = Promise.reject(new Error('No packets received'));
         const listen = {
             port: 44044,
-            address: '192.168.0.120',
+            address: '192.168.0.254',
             getPacketSource: new Promise(resolve => _resolve = resolve)
         };
         const server = dgram.createSocket('udp4', resolve(listen));
